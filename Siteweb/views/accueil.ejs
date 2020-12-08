@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<% include partials/head%>
+</head>
+
+<!-- Style pour graphe labo -->
+<style>
+
+	#graphe {
+		
+		border-color: purple;
+		text-align:center;
+	}
+
+	.link {
+		stroke: #777;
+		stroke-opacity: 0.3;
+		stroke-width: 1.5px;
+	}
+
+	.node circle {
+		fill: #ccc;
+		stroke: #000;
+		stroke-width: 1.5px;
+	}
+
+	.node text {
+		display: none;
+		font: 20px sans-serif;
+	}
+
+	.node:hover circle {
+		fill: #000;
+	}
+
+	.node:hover text {
+		display: inline;
+	}
+
+	.cell {
+		fill: none;
+		pointer-events: all;
+	}
+	</style>
+<!-- Fin style pour graphe labo -->
+
+<body>
+	<!--div class="jumbotron text-center" -->
+	<header>
+		<% include partials/header%>
+	</header>
+	<aside class="float-right bg-light" width="125%">
+
+		<table class="table-bordered mx-auto text-dark">
+			<thead class="thead-dark text-bold">
+				<tr>
+					<th class="px-auto ml-2" scope="col" value="Position"># </th>
+					<th scope="px-auto mr-2 col" value="mot_clé">mot-cl&eacute;</th>
+				</tr>
+
+			</thead>
+			<tbody class="px-auto mx-auto" id="motsCles">
+
+			</tbody>
+		</table>
+	</aside>
+
+
+	<div class="container">
+
+		<div class="row">
+			<div class="col" id="graphe" width="50%" height="50%">
+
+			</div>
+
+		</div>
+		<div class="row">
+			<div class="col " width="50%" height="50%">
+
+				<canvas id="myChart">
+					<script>
+						var ctx = document.getElementById('myChart').getContext('2d');
+						var data = {
+							labels:  <%- JSON.stringify(liste5elem[0]) %>,
+							//['Red,blue', 'Blue', 'Yellow', 'Green', 'Purple','Orange'] ,
+							datasets: [{
+								label: 'Nombre de publications',
+								data: <%-  liste5elem[1] %>,
+								backgroundColor: [
+									'rgba(255, 99, 132, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(0, 255, 0, 0.2)',
+									'rgba(153, 102, 255, 0.2)',
+									'rgba(255, 159, 64, 0.2)'
+								],
+								borderColor: [
+									'rgba(255,99,132,1)',
+									'rgba(54, 162, 235, 1)',
+									'rgba(0, 255, 0, 1)',
+									'rgba(153, 102, 255, 1)',
+									'rgba(255, 159, 64, 1)'
+								],
+								borderWidth: 1
+							}]
+						};
+						var chart = new Chart(ctx, {
+							// The type of chart we want to create
+							type: 'bar',
+
+							// The data for our dataset
+							data: data,
+
+
+
+							// Configuration options go here
+							options: {
+								scales: {
+									yAxes: [{
+										ticks: {
+											beginAtZero: true
+										}
+									}]
+								}
+							}
+						});
+					</script>
+
+				</canvas>
+
+			</div>
+		</div>
+
+	</div>
+	</div>
+
+
+	</div>
+
+
+
+	<footer class="container hidden-bottom mx-auto">
+		<% include partials/footer%>
+
+	</footer>
+
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+	 crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+	 crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+	<script type="text/html" src="http://www.chartjs.org/assets/Chart.js"> </script>
+	<script type="application/javascript" src="he.js"></script>
+</body>
+
+</html>
+
+<!-- SCRIPT POUR GRAPHE LAB -->
+<script type="text/javascript">
+
+	var width = 1000,
+		height = 600
+
+	var svg = d3.select("#graphe").append("svg")
+		.attr("border", 2)
+		.attr("width", width)
+		.attr("height", height);
+
+	var bordure = svg.append("rect")
+		.attr("x", 0)
+		.attr("y", 0)
+		.attr("height", height)
+		.attr("width", width)
+		.style("stroke", "black")
+		.style("fill", "none")
+		.style("stroke-width", 2);
+
+	var force = d3.layout.force()
+		.gravity(0.1)
+		.charge(-120)
+		.linkDistance(60)
+		.size([width, height]);
+
+	var voronoi = d3.geom.voronoi()
+		.x(function (d) { return d.x; })
+		.y(function (d) { return d.y; })
+		.clipExtent([[0, 0], [width, height]]);
+
+	d3.json("structName.json", function (error, json) {
+		if (error) throw error;
+
+		force
+			.nodes(json.nodes)
+			.links(json.edges)
+			.start();
+
+		var link = svg.selectAll(".link")
+			.data(json.edges)
+			.enter().append("line")
+			.attr("class", "link");
+
+		var node = svg.selectAll(".node")
+			.data(json.nodes)
+			.enter().append("g")
+			.attr("class", "node")
+			.call(force.drag);
+
+		var circle = node.append("circle")
+			.attr("r", function (d) {
+
+				if (d.poids <= 10) { return 4.5 }
+				else if (d.poids <= 50) { return 7 }
+				else if (d.poids <= 100) { return 10 }
+				else { return d.poids / 10 }
+			}); //taille des cercles
+
+		var label = node.append("text")
+			.attr("dy", ".35em")
+			.text(function (d) { return d.labStructName; })
+			.style("fill", "purple");
+
+		var cell = node.append("path")
+			.attr("class", "cell");
+
+		force.on("tick", function () {
+			cell
+				.data(voronoi(json.nodes))
+				.attr("d", function (d) { return d.length ? "M" + d.join("L") : null; });
+
+			link
+				.attr("x1", function (d) { return d.source.x; })
+				.attr("y1", function (d) { return d.source.y; })
+				.attr("x2", function (d) { return d.target.x; })
+				.attr("y2", function (d) { return d.target.y; });
+
+			circle
+				.attr("cx", function (d) { return d.x; })
+				.attr("cy", function (d) { return d.y; });
+
+			label
+				.attr("x", function (d) { return d.x + 8; })
+				.attr("y", function (d) { return d.y; });
+		});
+	});
+
+</script>
+<!--script insertion Mots clés-->
+<script>
+
+
+	let liste =<% - keywords %>
+
+		console.log(liste)
+	let table = document.getElementById("motsCles")
+	var i = 0
+	for (i; i < liste.length; i++) {
+		var tr = document.createElement("tr")
+		var td = document.createElement("td")
+		var td1 = document.createElement("td")
+		td.setAttribute("scope", "row")
+		td.setAttribute("class", "mx-auto")
+
+		td1.setAttribute("scope", "row")
+		td1.setAttribute("class", "mx-auto")
+
+		td1.innerHTML += (i + 1)
+		td.innerHTML += liste[i]
+		tr.setAttribute("class", "mx-auto")
+		tr.appendChild(td1)
+		tr.appendChild(td)
+		table.appendChild(tr)
+	}
+
+</script>
+<!--	str.replace(/(.|,|;|:|\"|\{|\})/i,'')
+	console.log(str["1"])
+-->

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <% include partials/head%>
+</head>
+
+<body>
+
+
+  <!--div class="jumbotron text-center" -->
+  <header>
+    <% include partials/header%>
+  </header>
+
+  <div class="container">
+    <div class="row">
+      <div id="listeC1" class="col-sm-4 mx-auto list-group">
+
+      </div>
+      <div id="listeC2" class="col-sm-4 mx-auto list-group">
+      </div>
+      <div id="listeC3" class="col-sm-4 mx-auto list-group">
+      </div>
+
+
+    </div>
+
+    <script>
+
+      var liste = <%- JSON.stringify(liste) %>
+      liste = liste.sort();
+      var taille = Math.trunc(liste.length / 3);
+
+      var ul1 = document.getElementById('listeC1');
+      var ul2 = document.getElementById('listeC2');
+
+      var ul3 = document.getElementById('listeC3');
+
+
+      for (let i = 0; i < taille; i++) {
+        ul1.innerHTML += "<a class=\"list-group-item \" href = \"http://localhost:8080/structure/" + liste[i] + "\">" + liste[i] + "</a>";
+      }
+      for (let i = taille; i < 2 * taille; i++) {
+        ul2.innerHTML += "<a class=\"list-group-item \" href = \"http://localhost:8080/structure/" + liste[i] + "\">" + liste[i] + "</a>";
+      }
+      for (let i = 2 * taille; i < 3 * taille; i++) {
+        ul3.innerHTML += "<a class=\"list-group-item \" href = \"http://localhost:8080/structure/" + liste[i] + "\">" + liste[i] + "</a>";
+      }
+
+function fctSearch() {
+
+        var recherche = document.getElementById('searchI').value;
+	console.log(recherche);
+        var result = liste.filter(elem => elem == recherche);
+	console.log(result);
+        for (let i = 0; i < result.length; i++) {
+		ul1.innerHTML += "<a class=\"list-group-item \" href = \"http://localhost:8080/structure/" + result[i] + "\">" + result[i] + "</a>";
+        }
+
+      }
+      
+
+    </script>
+
+
+
+
+
+
+<footer class="container hidden-bottom mx-auto">
+    <% include partials/footer%>
+
+ </footer>
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script type="text/html" src="jscript/graph.js"></script>
+
+</body>
+
+</html>

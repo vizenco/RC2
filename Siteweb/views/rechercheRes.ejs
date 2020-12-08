@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <%include partials/head%>
+</head>
+<body>
+    <header>
+      <% include partials/header%>  
+    </header>
+
+
+    <div class="container">
+      <div class="list-group">
+	<div id="listeC1" class="col-sm-4 mx-auto list-group">
+      </div>
+        </div>
+    </div>
+    
+<script>
+
+var liste = <%- JSON.stringify(liste) %>
+liste = liste.sort();
+var ul1 = document.getElementById('listeC1');
+console.log(liste);
+
+//Recuperation de la valeur du champ searchI dans l'url (grâce à méthode GET)
+var recherche = location.search.substring(1).split('=');
+recherche = recherche[1];
+recherche = recherche.replace(/\+/g," ");
+var motARechercher = RegExp(recherche, 'i');
+var nouvelleListe = [];
+console.log(motARechercher);
+
+function rechercheElem1(elemATrier) {
+	
+	let i = elemATrier.search(motARechercher);
+	
+	if (i != -1) {
+		
+		nouvelleListe.push(elemATrier);
+		return true;
+	} else {	
+		return false;
+	}
+}
+
+function rechercheElem2(elemATrier) {
+	
+	let mots = recherche.split(' ');
+	
+	for (let j = 0; j < mots.length; j++) {
+		
+		let motCourant = RegExp(mots[j], 'i');
+		let i = elemATrier.search(motCourant);
+		if (i != -1) {
+			return true;
+		} else {	
+			return false;
+		}
+	}
+}
+
+var result = liste.filter(rechercheElem1);
+var result2 = nouvelleListe.filter(rechercheElem2);
+result = result.concat(result2);
+
+function supprimerDoublon(tab) {
+
+  	var tabSortie = [];
+	var obj = {};
+	for (let i = 0; i < tab.length; i++) {
+		obj[tab[i]] = 0;
+	}
+	for (let j in obj) {
+		tabSortie.push(j);
+	}
+	return tabSortie;
+}
+
+result = supprimerDoublon(result);
+for (let i = 0; i < result.length; i++) {
+	ul1.innerHTML += "<a class=\"list-group-item \" href = \"http://localhost:8080/structure/" + result[i] + "\">" + result[i] + "</a>";
+}
+
+</script>
+
+
+
+    <footer class="container hidden-bottom mx-auto">
+        <% include partials/footer%>
+    
+     </footer>
+    
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
